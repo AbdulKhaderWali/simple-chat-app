@@ -4,21 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Socket.IO Chat App</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="messages"></div>
-  <form id="message-form">
-    <input type="text" id="message-input" placeholder="Type a message...">
-    <button type="submit">Send</button>
-  </form>
+  <div class="container">
+    <div class="left" id="users"></div>
+    <div class="right">
+      <div id="messages"></div>
+      <div class="form">
+        <form id="message-form">
+          <input type="text" id="message-input" autocomplete="off" placeholder="Type a message...">
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
-
+    const name = prompt("Please Enter your name : ")
     const messagesDiv = document.getElementById('messages');
     const messageForm = document.getElementById('message-form');
     const messageInput = document.getElementById('message-input');
+    const users = document.querySelector("#users");
+
+    socket.emit("new-user-joined", name)
 
     messageForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -31,9 +42,16 @@
 
     socket.on('message', (message) => {
       const messageElement = document.createElement('p');
+      messageElement.classList.add("chat");
       messageElement.textContent = message;
       messagesDiv.appendChild(messageElement);
     });
+
+    socket.on('new-user-joined',(name) => {
+      users.textContent = name;
+      console.log("this is working")
+
+    })
   </script>
 </body>
 </html>

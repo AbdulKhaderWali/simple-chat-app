@@ -11,15 +11,35 @@ const io = socketIO(server);
 // Serve static files from the 'public' directory
 app.use(express.static(__dirname + "/public"));
 
+const user = {};
+const Replacement = {
+	react: "⚛️",
+	woah: "😲",
+	hey: "👋",
+	lol: "😂",
+	like: "🤍",
+	congratulations: "🎉",
+};
+
 // Handle socket connections
 io.on("connection", (socket) => {
 	console.log("A user connected");
+	socket.on("new-user-joined", (name) => {
+		console.log("New User", name);
+		user[socket.id] = name;
+		socket.emit("new-user-joined", name);
+	});
 
 	// Handle message event
 	socket.on("message", (message) => {
 		console.log("Message:", message);
 		// Broadcast the message to all connected clients
-		io.emit("message", message);
+		const messageArray = message.split(" ");
+		const newString = messageArray.map((word) => {
+			const lowerCase = word.toLowerCase();
+			return Replacement[lowerCase] || word;
+		});
+		io.emit("message", newString.join(" "));
 	});
 
 	// Handle disconnection
