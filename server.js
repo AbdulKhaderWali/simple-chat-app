@@ -23,16 +23,16 @@ const Replacement = {
 
 // Handle socket connections
 io.on("connection", (socket) => {
-	console.log("A user connected");
+	// console.log("A user connected");
+	console.log(io.engine.clientsCount);
+	const totalUsers = io.engine.clientsCount;
 	socket.on("new-user-joined", (name) => {
-		console.log("New User", name);
 		user[socket.id] = name;
-		socket.emit("new-user-joined", name);
+		socket.emit("new-user-joined", { name, totalUsers });
 	});
 
 	// Handle message event
 	socket.on("message", (message) => {
-		console.log("Message:", message);
 		// Broadcast the message to all connected clients
 		const messageArray = message.split(" ");
 		const newString = messageArray.map((word) => {
